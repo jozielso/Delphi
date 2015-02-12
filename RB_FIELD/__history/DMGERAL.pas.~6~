@@ -1,0 +1,46 @@
+unit DMGERAL;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DBXFirebird, Data.DB, Data.SqlExpr,
+  Data.FMTBcd, Datasnap.DBClient, Datasnap.Provider;
+
+type
+  TDM = class(TDataModule)
+    conexao: TSQLConnection;
+    qTabela: TSQLQuery;
+    pTabela: TDataSetProvider;
+    cdsTabela: TClientDataSet;
+    dsTabela: TDataSource;
+    cdsTabelaTABELA: TStringField;
+    cdsTabelaCAMPO: TStringField;
+    cdsTabelaTIPO: TStringField;
+    qRFIELD: TSQLQuery;
+    pRBFIELD: TDataSetProvider;
+    cdsRBFIELD: TClientDataSet;
+    StringField1: TStringField;
+    StringField2: TStringField;
+    StringField3: TStringField;
+    dsRBFIELD: TDataSource;
+    qCombo: TSQLQuery;
+    pCombo: TDataSetProvider;
+    cdsCombo: TClientDataSet;
+    dsCombo: TDataSource;
+    cdsComboTABELA: TStringField;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DM: TDM;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

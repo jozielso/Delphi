@@ -1,0 +1,59 @@
+unit DMGERAL;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DBXFirebird, Data.DB, Data.SqlExpr,
+  Data.FMTBcd, Datasnap.DBClient, Datasnap.Provider;
+
+type
+  TDM = class(TDataModule)
+    conexao: TSQLConnection;
+    qTabela: TSQLQuery;
+    pTabela: TDataSetProvider;
+    cdsTabela: TClientDataSet;
+    dsTabela: TDataSource;
+    cdsTabelaTABELA: TStringField;
+    cdsTabelaCAMPO: TStringField;
+    cdsTabelaTIPO: TStringField;
+    qRBFIELD: TSQLQuery;
+    pRBFIELD: TDataSetProvider;
+    cdsRBFIELD: TClientDataSet;
+    dsRBFIELD: TDataSource;
+    qCombo: TSQLQuery;
+    pCombo: TDataSetProvider;
+    cdsCombo: TClientDataSet;
+    dsCombo: TDataSource;
+    cdsComboTABELA: TStringField;
+    cdsRBFIELDTABLE_NAME: TStringField;
+    cdsRBFIELDFIELD_NAME: TStringField;
+    cdsRBFIELDFIELD_ALIAS: TStringField;
+    cdsRBFIELDDATATYPE: TStringField;
+    cdsRBFIELDSELECTABLE: TStringField;
+    cdsRBFIELDSEARCHABLE: TStringField;
+    cdsRBFIELDSORTABLE: TStringField;
+    cdsRBFIELDAUTOSEARCH: TStringField;
+    cdsRBFIELDMANDATORY: TStringField;
+    pRBFIELD_T: TDataSetProvider;
+    cdsRBFIELD_T: TClientDataSet;
+    StringField1: TStringField;
+    StringField2: TStringField;
+    StringField3: TStringField;
+    dsRBFIELD_T: TDataSource;
+    qRBFIELD_T: TSQLQuery;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DM: TDM;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

@@ -1,0 +1,284 @@
+unit P_RB_FIELD;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, DB, DBClient, Grids, DBGrids, JvExDBGrids, JvDBGrid, Buttons, DBCtrls,
+  StdCtrls, Mask, JvExMask, JvToolEdit, GIFImg, ExtCtrls, ImgList, DBXFirebird,
+  FMTBcd, SqlExpr, Provider, ComCtrls, JvExControls, JvInstallLabel,midaslib;
+
+type
+  TfrmPrincipal = class(TForm)
+    lblconectado: TLabel;
+    lblCaminho: TLabel;
+    btnConectar: TSpeedButton;
+    EDCAMINHO: TEdit;
+    grpTabela: TGroupBox;
+    dgvTabela: TDBGrid;
+    DBNavigator1: TDBNavigator;
+    edtPesquisa: TEdit;
+    btnPesquisar: TButton;
+    btnSair: TButton;
+    cboTabela: TComboBox;
+    grpRBFIELD: TGroupBox;
+    dgvRBFIELD: TDBGrid;
+    DBNavigator2: TDBNavigator;
+    btnProcessar: TButton;
+    PNSTATUS: TPanel;
+    procedure btnConectarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnPesquisarClick(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+    procedure edtPesquisaExit(Sender: TObject);
+    procedure cboTabelaExit(Sender: TObject);
+    procedure btnProcessarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+  procedure ShowExcessao(E : Exception;xTexto : String);
+
+
+implementation
+
+
+{$R *.dfm}
+
+uses FException, DMGERAL;
+
+
+
+
+procedure ShowExcessao(E : Exception;xTexto : String);
+begin
+  ExceptionDialogClass.MostraException(E,xTexto);
+End;
+function AllTrim(Dados: string): string;
+begin
+  Result := TrimLeft(TrimRight(Dados));
+end;
+
+
+
+function Empty(Dados: string): boolean;
+begin
+  if (Length(Trim(Dados)) = 0) or (AllTrim(Dados) = '/  /') or
+    (AllTrim(Dados) = '00:00:00') then
+    Empty := True
+  else
+    Empty := False;
+end;
+
+
+procedure TfrmPrincipal.btnConectarClick(Sender: TObject);
+Var
+  vCont : Integer;
+begin
+ try
+    // Origem
+    with DM do
+    Begin
+      if Empty(EDCAMINHO.Text) then
+        Exit;
+      conexao.Connected := False;
+      conexao.Params.Values['DataBase'] := EDCAMINHO.Text;
+      conexao.Connected := True;
+      lblconectado.Caption := 'Conectado';
+      lblCaminho.Caption := EDCAMINHO.Text;
+      SetCurrentDir(ExtractFilePath(EDCAMINHO.Text));
+      cdsTabela.Active := True;
+      cdsCombo.Active := True;
+      cdsRBFIELD_T.Active := True;
+
+      while not cdsCombo.Eof do
+        begin
+          cboTabela.Items.Add(cdsComboTABELA.AsString);
+          cdsCombo.Next;
+        end;
+
+      cboTabela.ItemIndex := 0;
+    End;
+  except
+    on E: Exception do
+    begin
+      ShowExcessao(E, 'Não foi possível Conectar à ' + EDCAMINHO.Text + ' !');
+    end;
+  end;
+end;
+
+
+
+procedure TfrmPrincipal.btnPesquisarClick(Sender: TObject);
+begin
+  try
+    // Origem
+    with DM do
+    Begin
+      {if Empty(edtPesquisa.Text) then
+        Exit;}
+      cdsTabela.Active := False;
+      qTabela.SQL.Clear;
+      qTabela.SQL.Add('SELECT RDB$RELATION_NAME AS TABELA, r.RDB$FIELD_NAME AS CAMPO, ');
+      qTabela.SQL.Append('CASE f.RDB$FIELD_TYPE');
+      qTabela.SQL.Append('WHEN 261 THEN ''BLOB''');
+      qTabela.SQL.Append('WHEN 14 THEN ''CHAR''');
+      qTabela.SQL.Append('WHEN 40 THEN ''CSTRING''');
+      qTabela.SQL.Append('WHEN 11 THEN ''D_FLOAT''');
+      qTabela.SQL.Append('WHEN 27 THEN ''DOUBLE''');
+      qTabela.SQL.Append('WHEN 10 THEN ''FLOAT''');
+      qTabela.SQL.Append('WHEN 10 THEN ''FLOAT''');
+      qTabela.SQL.Append('WHEN 16 THEN ''NUMERIC''');
+      qTabela.SQL.Append('WHEN 8 THEN ''INTEGER''');
+      qTabela.SQL.Append('WHEN 9 THEN ''QUAD''');
+      qTabela.SQL.Append('WHEN 7 THEN ''SMALLINT''');
+      qTabela.SQL.Append('WHEN 12 THEN ''DATE''');
+      qTabela.SQL.Append('WHEN 13 THEN ''TIME''');
+      qTabela.SQL.Append('WHEN 35 THEN ''TIMESTAMP''');
+      qTabela.SQL.Append('WHEN 37 THEN ''VARCHAR''');
+      qTabela.SQL.Append('ELSE ''UNKNOWN''');
+      qTabela.SQL.Append('END AS TIPO ');
+      qTabela.SQL.Append('FROM RDB$RELATION_FIELDS r ');
+      qTabela.SQL.Append('LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ');
+      qTabela.SQL.Append('LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ');
+      qTabela.SQL.Append('LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ');
+      qTabela.SQL.Append('WHERE R.RDB$SYSTEM_FLAG = 0 ');
+        if edtPesquisa.Text <> '' then
+          qTabela.SQL.Append('AND RDB$RELATION_NAME LIKE '+#39+edtPesquisa.Text+'%'+#39);
+      qTabela.SQL.Append('ORDER BY RDB$RELATION_NAME, r.RDB$FIELD_NAME ');
+      cdsTabela.Active := True;
+    End;
+  except
+    on E: Exception do
+    begin
+      ShowExcessao(E, 'Não foi possível executar a Pesquisa!');
+    end;
+  end;
+end;
+
+procedure TfrmPrincipal.btnProcessarClick(Sender: TObject);
+Var
+  vReg : Integer;
+begin
+   //Campos que serão inceridos na RB_FIELD
+  PNSTATUS.Caption := '';
+
+  with DM do
+  begin
+
+    //Verifica se a RB_TABLE já foi alimentada, se não , alimenta.
+    qTMP.Close;
+    qTMP.SQL.Text := 'SELECT COUNT(*) AS TOTAL FROM RB_TABLE WHERE TABLE_NAME = '+#39+cboTabela.Text+#39;
+    qTMP.Open;
+    vReg := qTMP.FieldByName('TOTAL').AsInteger;
+
+    if vReg < 1 then
+      begin
+        cdsRBTAB.Close;
+        cdsRBTAB.Open;
+        cdsRBTAB.Append;
+        cdsRBTAB.FieldByName('TABLE_NAME').AsString := cboTabela.Text;
+        cdsRBTAB.FieldByName('TABLE_ALIAS').AsString := cboTabela.Text;
+        cdsRBTAB.Post;
+        cdsRBTAB.ApplyUpdates(0);
+      end;
+
+     //Recebe informações do dataset temporario para alimentar RB_FIELD
+     cdsRBFIELD_T.Close;
+     cdsRBFIELD_T.Open;
+     cdsRBFIELD.First;
+      while not cdsRBFIELD.Eof do
+        begin
+          cdsRBFIELD_T.Append;
+          cdsRBFIELD_T.FieldByName('TABLE_NAME').AsString := cdsRBFIELDTABLE_NAME.AsString;
+          cdsRBFIELD_T.FieldByName('FIELD_NAME').AsString := cdsRBFIELDFIELD_NAME.AsString;
+          cdsRBFIELD_T.FieldByName('FIELD_ALIAS').AsString := cdsRBFIELDFIELD_ALIAS.AsString;
+          cdsRBFIELD_T.FieldByName('DATATYPE').AsString := cdsRBFIELDDATATYPE.AsString;
+          cdsRBFIELD_T.FieldByName('SELECTABLE').AsString := 'T';
+          cdsRBFIELD_T.FieldByName('SEARCHABLE').AsString := 'T';
+          cdsRBFIELD_T.FieldByName('SORTABLE').AsString := 'T';
+          cdsRBFIELD_T.FieldByName('AUTOSEARCH').AsString := 'T';
+          cdsRBFIELD_T.FieldByName('MANDATORY').AsString := 'F';
+          cdsRBFIELD_T.Post;
+          cdsRBFIELD.Next;
+        end;
+      cdsRBFIELD_T.ApplyUpdates(0);
+      PNSTATUS.Caption := 'Inclusão realizada com Sucesso!';
+      ShowMessage('Campos Inseridos com Sucesso!!!');
+  end;
+
+
+
+
+end;
+
+procedure TfrmPrincipal.btnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+
+procedure TfrmPrincipal.cboTabelaExit(Sender: TObject);
+begin
+  with DM do
+  begin
+    //Campos que nao existem na RB_FIELD
+
+    cdsRBFIELD.Close;
+    qRBFIELD.Close;
+    qRBFIELD.ParamByName('NTABELA').AsString := cboTabela.Text;
+    qRBFIELD.Open;
+    cdsRBFIELD.Open;
+    cdsRBFIELD.EmptyDataSet;
+
+    while not qRBFIELD.Eof do
+      begin
+        cdsRBFIELD.Append;
+        cdsRBFIELDTABLE_NAME.AsString := qRBFIELDTABLE_NAME.AsString;
+        cdsRBFIELDFIELD_NAME.AsString := qRBFIELDFIELD_NAME.AsString;
+        cdsRBFIELDFIELD_ALIAS.AsString := qRBFIELDFIELD_ALIAS.AsString;
+        cdsRBFIELDDATATYPE.AsString := qRBFIELDDATATYPE.AsString;
+        cdsRBFIELDSELECTABLE.AsString := qRBFIELDSELECTABLE.AsString;
+        cdsRBFIELDSEARCHABLE.AsString := qRBFIELDSEARCHABLE.AsString;
+        cdsRBFIELDSORTABLE.AsString  := qRBFIELDSORTABLE.AsString;
+        cdsRBFIELDAUTOSEARCH.AsString := qRBFIELDAUTOSEARCH.AsString;
+        cdsRBFIELDMANDATORY.AsString := qRBFIELDMANDATORY.AsString;
+        cdsRBFIELD.Post;
+        qRBFIELD.Next;
+      end;
+
+    // Campos disponiveis no banco de dados.
+    cdsTabela.EmptyDataSet;
+    cdsTabela.Close;
+    qTabela.ParamByName('NTABELA').AsString := cboTabela.Text;
+    cdsTabela.Open;
+
+  end;
+end;
+
+procedure TfrmPrincipal.edtPesquisaExit(Sender: TObject);
+begin
+  btnPesquisar.Click;
+end;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  frmPrincipal.Width := 1200;
+  frmPrincipal.Height := 489;
+  try
+    dm.conexao.Connected := false;
+  Except
+
+  end;
+  EDCAMINHO.Text := 'suporte07:D:\DBDATA\PUMA\SAMAR_SORRISO\PUMA.FDB';
+  dm.cdsRBFIELD.CreateDataSet;
+
+
+end;
+
+end.

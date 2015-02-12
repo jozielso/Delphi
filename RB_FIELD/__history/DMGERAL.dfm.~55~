@@ -1,0 +1,433 @@
+object DM: TDM
+  OldCreateOrder = False
+  Height = 259
+  Width = 673
+  object conexao: TSQLConnection
+    DriverName = 'Firebird'
+    LoginPrompt = False
+    Params.Strings = (
+      'DriverUnit=Data.DBXFirebird'
+      
+        'DriverPackageLoader=TDBXDynalinkDriverLoader,DbxCommonDriver190.' +
+        'bpl'
+      
+        'DriverAssemblyLoader=Borland.Data.TDBXDynalinkDriverLoader,Borla' +
+        'nd.Data.DbxCommonDriver,Version=19.0.0.0,Culture=neutral,PublicK' +
+        'eyToken=91d62ebb5b0d1b1b'
+      
+        'MetaDataPackageLoader=TDBXFirebirdMetaDataCommandFactory,DbxFire' +
+        'birdDriver190.bpl'
+      
+        'MetaDataAssemblyLoader=Borland.Data.TDBXFirebirdMetaDataCommandF' +
+        'actory,Borland.Data.DbxFirebirdDriver,Version=19.0.0.0,Culture=n' +
+        'eutral,PublicKeyToken=91d62ebb5b0d1b1b'
+      'GetDriverFunc=getSQLDriverINTERBASE'
+      'LibraryName=dbxfb.dll'
+      'LibraryNameOsx=libsqlfb.dylib'
+      'VendorLib=fbclient.dll'
+      'VendorLibWin64=fbclient.dll'
+      'VendorLibOsx=/Library/Frameworks/Firebird.framework/Firebird'
+      'Database=suporte07:D:\DBDATA\PUMA\SAMAR_SORRISO\PUMA.FDB'
+      'User_Name=sysdba'
+      'Password=masterkey'
+      'Role=RoleName'
+      'MaxBlobSize=-1'
+      'LocaleCode=0000'
+      'IsolationLevel=ReadCommitted'
+      'SQLDialect=3'
+      'CommitRetain=False'
+      'WaitOnLocks=True'
+      'TrimChar=False'
+      'BlobSize=-1'
+      'ErrorResourceFile='
+      'RoleName=RoleName'
+      'ServerCharSet='
+      'Trim Char=False')
+    Left = 24
+    Top = 16
+  end
+  object qTabela: TSQLQuery
+    MaxBlobSize = -1
+    Params = <
+      item
+        DataType = ftString
+        Name = 'NTABELA'
+        ParamType = ptInput
+      end>
+    SQL.Strings = (
+      
+        'SELECT DISTINCT RDB$RELATION_NAME AS TABELA, r.RDB$FIELD_NAME AS' +
+        ' CAMPO,'
+      '        CASE f.RDB$FIELD_TYPE'
+      '        WHEN 261 THEN '#39'BLOB'#39
+      '        WHEN 14 THEN '#39'CHAR'#39
+      '        WHEN 40 THEN '#39'CSTRING'#39
+      '        WHEN 11 THEN '#39'D_FLOAT'#39
+      '        WHEN 27 THEN '#39'DOUBLE'#39
+      '        WHEN 10 THEN '#39'FLOAT'#39
+      '        WHEN 16 THEN '#39'NUMERIC'#39
+      '        WHEN 8 THEN '#39'INTEGER'#39
+      '        WHEN 9 THEN '#39'QUAD'#39
+      '        WHEN 7 THEN '#39'SMALLINT'#39
+      '        WHEN 12 THEN '#39'DATE'#39
+      '        WHEN 13 THEN '#39'TIME'#39
+      '        WHEN 35 THEN '#39'TIMESTAMP'#39
+      '        WHEN 37 THEN '#39'VARCHAR'#39
+      '        ELSE '#39'UNKNOWN'#39
+      '        END AS TIPO'
+      '    FROM RDB$RELATION_FIELDS r'
+      
+        '    LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_N' +
+        'AME'
+      
+        '    LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.R' +
+        'DB$COLLATION_ID'
+      
+        '    LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID ' +
+        '= cset.RDB$CHARACTER_SET_ID'
+      '    WHERE R.RDB$SYSTEM_FLAG = 0 '
+      ' AND R.RDB$RELATION_NAME = :NTABELA '
+      '    ORDER BY RDB$RELATION_NAME, r.RDB$FIELD_NAME')
+    SQLConnection = conexao
+    Left = 72
+    Top = 16
+  end
+  object pTabela: TDataSetProvider
+    DataSet = qTabela
+    Left = 128
+    Top = 16
+  end
+  object cdsTabela: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'pTabela'
+    Left = 184
+    Top = 16
+    object cdsTabelaTABELA: TStringField
+      FieldName = 'TABELA'
+      FixedChar = True
+      Size = 93
+    end
+    object cdsTabelaCAMPO: TStringField
+      FieldName = 'CAMPO'
+      FixedChar = True
+      Size = 93
+    end
+    object cdsTabelaTIPO: TStringField
+      FieldName = 'TIPO'
+      Required = True
+      FixedChar = True
+      Size = 9
+    end
+  end
+  object dsTabela: TDataSource
+    DataSet = cdsTabela
+    Left = 248
+    Top = 16
+  end
+  object qRBFIELD: TSQLQuery
+    MaxBlobSize = -1
+    Params = <
+      item
+        DataType = ftString
+        Name = 'NTABELA'
+        ParamType = ptInput
+      end>
+    SQL.Strings = (
+      
+        'SELECT DISTINCT R.RDB$RELATION_NAME AS TABLE_NAME, r.RDB$FIELD_N' +
+        'AME AS FIELD_NAME,r.RDB$FIELD_NAME AS FIELD_ALIAS,'
+      '        CASE f.RDB$FIELD_TYPE'
+      '        WHEN 261 THEN '#39'dtBlob'#39
+      '        WHEN 14 THEN '#39'dtString'#39
+      '        WHEN 40 THEN '#39'dtString'#39
+      '        WHEN 11 THEN '#39'dtDouble'#39
+      '        WHEN 27 THEN '#39'dtDouble'#39
+      '        WHEN 10 THEN '#39'dtDouble'#39
+      '        WHEN 16 THEN '#39'dtDouble'#39
+      '        WHEN 8 THEN '#39'dtInteger'#39
+      '        WHEN 9 THEN '#39'dtDouble'#39
+      '        WHEN 7 THEN '#39'dtInteger'#39
+      '        WHEN 12 THEN '#39'dtDate'#39
+      '        WHEN 13 THEN '#39'dtTime'#39
+      '        WHEN 35 THEN '#39'dtDateTime'#39
+      '        WHEN 37 THEN '#39'dtString'#39
+      '        ELSE '#39'dtString'#39
+      
+        '        END AS DATATYPE, '#39'T'#39' AS SELECTABLE, '#39'T'#39' AS SEARCHABLE, '#39 +
+        'T'#39' AS SORTABLE, '#39'T'#39' AS AUTOSEARCH, '#39'F'#39' AS MANDATORY'
+      '    FROM RDB$RELATION_FIELDS r'
+      
+        '    LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_N' +
+        'AME'
+      
+        '    LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.R' +
+        'DB$COLLATION_ID'
+      
+        '    LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID ' +
+        '= cset.RDB$CHARACTER_SET_ID'
+      ' WHERE R.RDB$SYSTEM_FLAG = 0'
+      ' AND R.RDB$RELATION_NAME = :NTABELA'
+      
+        ' AND R.RDB$RELATION_NAME NOT IN (SELECT RB.TABLE_NAME FROM RB_FI' +
+        'ELD RB WHERE RB.TABLE_NAME = R.RDB$RELATION_NAME AND RB.FIELD_NA' +
+        'ME = R.RDB$FIELD_NAME)'
+      ' ORDER BY RDB$RELATION_NAME, r.RDB$FIELD_NAME')
+    SQLConnection = conexao
+    Left = 72
+    Top = 80
+    object qRBFIELDTABLE_NAME: TStringField
+      FieldName = 'TABLE_NAME'
+      FixedChar = True
+      Size = 93
+    end
+    object qRBFIELDFIELD_NAME: TStringField
+      FieldName = 'FIELD_NAME'
+      FixedChar = True
+      Size = 93
+    end
+    object qRBFIELDFIELD_ALIAS: TStringField
+      FieldName = 'FIELD_ALIAS'
+      FixedChar = True
+      Size = 93
+    end
+    object qRBFIELDDATATYPE: TStringField
+      FieldName = 'DATATYPE'
+      Required = True
+      FixedChar = True
+      Size = 10
+    end
+    object qRBFIELDSELECTABLE: TStringField
+      FieldName = 'SELECTABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object qRBFIELDSEARCHABLE: TStringField
+      FieldName = 'SEARCHABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object qRBFIELDSORTABLE: TStringField
+      FieldName = 'SORTABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object qRBFIELDAUTOSEARCH: TStringField
+      FieldName = 'AUTOSEARCH'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object qRBFIELDMANDATORY: TStringField
+      FieldName = 'MANDATORY'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+  end
+  object cdsRBFIELD: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    Left = 184
+    Top = 80
+    object cdsRBFIELDTABLE_NAME: TStringField
+      FieldName = 'TABLE_NAME'
+      FixedChar = True
+      Size = 93
+    end
+    object cdsRBFIELDFIELD_NAME: TStringField
+      FieldName = 'FIELD_NAME'
+      FixedChar = True
+      Size = 93
+    end
+    object cdsRBFIELDFIELD_ALIAS: TStringField
+      FieldName = 'FIELD_ALIAS'
+      FixedChar = True
+      Size = 93
+    end
+    object cdsRBFIELDDATATYPE: TStringField
+      FieldName = 'DATATYPE'
+      Required = True
+      FixedChar = True
+      Size = 10
+    end
+    object cdsRBFIELDSELECTABLE: TStringField
+      FieldName = 'SELECTABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELDSEARCHABLE: TStringField
+      FieldName = 'SEARCHABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELDSORTABLE: TStringField
+      FieldName = 'SORTABLE'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELDAUTOSEARCH: TStringField
+      FieldName = 'AUTOSEARCH'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELDMANDATORY: TStringField
+      FieldName = 'MANDATORY'
+      Required = True
+      FixedChar = True
+      Size = 1
+    end
+  end
+  object dsRBFIELD: TDataSource
+    DataSet = cdsRBFIELD
+    Left = 248
+    Top = 80
+  end
+  object qCombo: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'SELECT DISTINCT RDB$RELATION_NAME AS TABELA   '
+      'FROM RDB$RELATION_FIELDS r'
+      'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME'
+      
+        'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$C' +
+        'OLLATION_ID'
+      
+        'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cs' +
+        'et.RDB$CHARACTER_SET_ID'
+      'WHERE R.RDB$SYSTEM_FLAG = 0'
+      'ORDER BY RDB$RELATION_NAME, r.RDB$FIELD_NAME')
+    SQLConnection = conexao
+    Left = 70
+    Top = 136
+  end
+  object pCombo: TDataSetProvider
+    DataSet = qCombo
+    Left = 126
+    Top = 136
+  end
+  object cdsCombo: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'pCombo'
+    Left = 182
+    Top = 136
+    object cdsComboTABELA: TStringField
+      FieldName = 'TABELA'
+      FixedChar = True
+      Size = 93
+    end
+  end
+  object dsCombo: TDataSource
+    DataSet = cdsCombo
+    Left = 246
+    Top = 136
+  end
+  object qRBFIELD_T: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'SELECT * FROM RB_FIELD WHERE TABLE_NAME = '#39'XXXXXXXX'#39)
+    SQLConnection = conexao
+    Left = 336
+    Top = 82
+  end
+  object pRBFIELD_T: TDataSetProvider
+    DataSet = qRBFIELD_T
+    Left = 416
+    Top = 82
+  end
+  object cdsRBFIELD_T: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'pRBFIELD_T'
+    Left = 488
+    Top = 82
+    object cdsRBFIELD_TTABLE_NAME: TStringField
+      FieldName = 'TABLE_NAME'
+      Required = True
+      Size = 60
+    end
+    object cdsRBFIELD_TFIELD_NAME: TStringField
+      FieldName = 'FIELD_NAME'
+      Required = True
+      Size = 60
+    end
+    object cdsRBFIELD_TFIELD_ALIAS: TStringField
+      FieldName = 'FIELD_ALIAS'
+      Size = 60
+    end
+    object cdsRBFIELD_TDATATYPE: TStringField
+      FieldName = 'DATATYPE'
+      Size = 60
+    end
+    object cdsRBFIELD_TSELECTABLE: TStringField
+      FieldName = 'SELECTABLE'
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELD_TSEARCHABLE: TStringField
+      FieldName = 'SEARCHABLE'
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELD_TSORTABLE: TStringField
+      FieldName = 'SORTABLE'
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELD_TAUTOSEARCH: TStringField
+      FieldName = 'AUTOSEARCH'
+      FixedChar = True
+      Size = 1
+    end
+    object cdsRBFIELD_TMANDATORY: TStringField
+      FieldName = 'MANDATORY'
+      FixedChar = True
+      Size = 1
+    end
+  end
+  object dsRBFIELD_T: TDataSource
+    DataSet = cdsRBFIELD_T
+    Left = 568
+    Top = 84
+  end
+  object qRBTAB: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'SELECT * FROM RB_TABLE WHERE TABLE_NAME = '#39'XXXXXXXX'#39)
+    SQLConnection = conexao
+    Left = 336
+    Top = 26
+  end
+  object pRBTAB: TDataSetProvider
+    DataSet = qRBTAB
+    Left = 416
+    Top = 26
+  end
+  object cdsRBTAB: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'pRBTAB'
+    Left = 488
+    Top = 26
+  end
+  object qTMP: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      '')
+    SQLConnection = conexao
+    Left = 592
+    Top = 10
+  end
+end

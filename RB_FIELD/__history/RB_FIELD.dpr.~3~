@@ -1,0 +1,16 @@
+program RB_FIELD;
+
+uses
+  Vcl.Forms,
+  P_RB_FIELD in 'P_RB_FIELD.pas' {Principal},
+  DMGERAL in 'DMGERAL.pas' {DM: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TPrincipal, Principal);
+  Application.CreateForm(TDM, DM);
+  Application.Run;
+end.
